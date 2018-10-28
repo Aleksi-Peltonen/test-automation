@@ -172,7 +172,7 @@ class Serial(Interf):
     def write(self, string):
         """ Write string to serial interface.
         
-        Args:
+        Args:R
             string (str): string to be sent to serial interface
     
         """

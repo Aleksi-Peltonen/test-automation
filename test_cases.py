@@ -34,7 +34,7 @@ def test_read_simple(dut):
 
         TODO:
         1. Implement comparison of sent and expected value.
-        2. Implement result determining according to specification.
+        2. Implement ressult determining according to specification.
 
     """
     name = "Simple reading test for few individual values"
@@ -49,8 +49,13 @@ def test_read_simple(dut):
         write_value(my_interface, sent)
         value = read_value(my_interface)
         # TODO implement missing logic here
+        if str(sent) == value:
+            results.append("PASS")
+        else:
+            results.append("FAIL")
         sleep(2)
         dut.board.reset()
+
 
     result = check_results(results)
     # end test content
@@ -73,11 +78,11 @@ def test_read_range(dut):
 
     # begin test content
     dut.board.reset()
-    for sent in range(0, 2001, 1):
+    for sent in range(0, 2001, 50):
         write_value(dut.board.default_interface, sent)
         value = read_value(dut.board.default_interface)
 
-        if value != sent:
+        if value != str(sent):
             print("incorrect value! Got: " + value + ", expected: " + str(sent))
             results.append("FAIL")
         else:
@@ -95,9 +100,9 @@ def test_invalid_values(dut):
         Returns "PASS" or "FAIL"
 
         TODO:
-        1. Implement comparison of sent and expected value.
-        2. Implement result determining according to specification.
-        3. Simplify test case structure.
+        1. Implement comparison of sent and expected value. DONE
+        2. Implement result determining according to specification. DONE
+        3. Simplify test case structure. DONE
 
     """
     name = "Simple reading test for few invalid values"
@@ -107,75 +112,27 @@ def test_invalid_values(dut):
     dut.board.reset()
     my_interface = dut.board.default_interface
 
-    command = "1234\r"  # valid
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
+    commands = ["1234\r"," 1234\r","4321\r","test\r","0est\r","tes1\r","01234\r","012345678\r","0\r","100\r","500\r","1000\r","2000\r" ]
 
-    command = " 1234\r"
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
+    for x in range(len(commands)):
+        my_interface.write(commands[x])
+        value= read_value(my_interface)
 
-    command = "4321\r"
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
+        if value.isdigit() == False: # Check if value is a number
+            print("ERROR: VALUE NOT INTEGER! Got: " + value + ", expected: 0-2000\n")
+            results.append("FAIL")
+        elif int(value) <= 2000 and int(value) >= 0: # Check if value is in specification range
+            print("OK value! Got: " + value + ", expected: 0-2000\n")
+            results.append("PASS")
+        else:
+            print("Value out of range. Got: " + value + ", expected: 0-2000\n")
+            results.append("FAIL")
 
-    command = "test\r"
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "0est\r"
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "tes1\r"
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "01234\r"
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "012345678\r"
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "0\r"  # valid
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "100\r"  # valid
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "500\r"  # valid
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "1000\r"  # valid
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
-
-    command = "2000\r"  # valid
-    my_interface.write(command)
-    value = read_value(my_interface)
-    sleep(1)
+        sleep(1)
 
     # end test content
     result = check_results(results)
     return name, result
-
 
 def test_measure(dut):
     """ Simple voltage measurement test.
@@ -225,10 +182,10 @@ def main():
     """
     # ENVIRONMENT CONFIGURATION -------------------------------------------------
 
-    serial_port = "COMx"     # serial_port = "/dev/ttyUSB0"
-    firmware_file = "MyFirmware.bin" # optionally overridden with command line argument
-    board_name = "MyBoard"
-    dut_name = "MyIndividualDut"
+    serial_port = "COM5"     # serial_port = "/dev/ttyUSB0"
+    firmware_file = "firmware/tamk_4.bin" # optionally overridden with command line argument
+    board_name = "STM32F446ZE"
+    dut_name = "066EFF535155878281152132"
 
     # BOARD CONFIGURATION -------------------------------------------------------
 
@@ -269,10 +226,10 @@ def main():
 
     # TEST CASES ----------------------------------------------------------------
     test_cases = [
-        test_read_simple,
-        test_read_range,
-        test_invalid_values,
-        test_measure
+         test_read_simple,
+         test_read_range,
+         test_invalid_values,
+        # test_measure
     ]
 
     test_sequence(mydut, test_cases)

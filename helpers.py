@@ -70,6 +70,7 @@ def read_value(interface):
         string_value = ints_to_string(value)
     else:
         string_value = str(value)
+    string_value = remove_whitespace(string_value)
     print("READ: " + string_value)
     return string_value
 
