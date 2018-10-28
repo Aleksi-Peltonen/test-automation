@@ -114,19 +114,20 @@ def test_invalid_values(dut):
 
     commands = ["1234\r"," 1234\r","4321\r","test\r","0est\r","tes1\r","01234\r","012345678\r","0\r","100\r","500\r","1000\r","2000\r" ]
 
-    for x in range(len(commands)):
-        my_interface.write(commands[x])
-        value= read_value(my_interface)
+    for x in commands:
+       
+        if is_valid(x): # Write if valid
+             my_interface.write(x)
+             value= read_value(my_interface)
 
-        if value.isdigit() == False: # Check if value is a number
-            print("ERROR: VALUE NOT INTEGER! Got: " + value + ", expected: 0-2000\n")
-            results.append("FAIL")
-        elif int(value) <= 2000 and int(value) >= 0: # Check if value is in specification range
-            print("OK value! Got: " + value + ", expected: 0-2000\n")
-            results.append("PASS")
+             if value == remove_whitespace(x):  # Is Read == Write?
+                results.append("PASS")
+             else:
+                results.append("FAIL")
+
         else:
-            print("Value out of range. Got: " + value + ", expected: 0-2000\n")
-            results.append("FAIL")
+            print("INVALID INPUT: " + x + "\t\t\t  Expecting Int 0-2000") 
+            results.append("PASS") #Invalid value detected
 
         sleep(1)
 
@@ -226,8 +227,8 @@ def main():
 
     # TEST CASES ----------------------------------------------------------------
     test_cases = [
-         test_read_simple,
-         test_read_range,
+        # test_read_simple,
+        # test_read_range,
          test_invalid_values,
         # test_measure
     ]
