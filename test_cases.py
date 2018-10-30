@@ -118,7 +118,7 @@ def test_invalid_values(dut):
        
         if is_valid(x): # Write if valid
              my_interface.write(x)
-             value= read_value(my_interface)
+             value = read_value(my_interface)
 
              if value == remove_whitespace(x):  # Is Read == Write?
                 results.append("PASS")
