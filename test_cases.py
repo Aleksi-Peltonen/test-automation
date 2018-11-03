@@ -78,7 +78,7 @@ def test_read_range(dut):
 
     # begin test content
     dut.board.reset()
-    for sent in range(0, 2001, 50):
+    for sent in range(0, 2001, 1):
         write_value(dut.board.default_interface, sent)
         value = read_value(dut.board.default_interface)
 
@@ -227,8 +227,8 @@ def main():
 
     # TEST CASES ----------------------------------------------------------------
     test_cases = [
-        # test_read_simple,
-        # test_read_range,
+         test_read_simple,
+         test_read_range,
          test_invalid_values,
         # test_measure
     ]
